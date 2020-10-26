@@ -6,6 +6,7 @@
 #include <condition_variable>
 #include <memory>
 #include <functional>
+#include <atomic>
 using namespace std;
 class connectionPool
 {
@@ -30,7 +31,7 @@ private:
 	int connectionTimeout;
 	
 	mutex queueMutex;
-	int connCount;
+	atomic<int> connCount;
 	condition_variable cv;
 	bool loadConfigFile();
 	// 运行在独立的线程中，专门负责生产新连接

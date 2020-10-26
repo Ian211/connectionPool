@@ -2,7 +2,7 @@
 using namespace std;
 #include "connection.h"
 #include "connectionPool.h"
-void test(void){
+void test_pool(void){
 	connectionPool* cp = connectionPool::getConnectionPool();
 	for (int i = 0; i < 250; ++i)
 	{
@@ -10,39 +10,25 @@ void test(void){
 		sprintf_s(sql, "insert into user(name,age,sex) values('%s',%d,'%s')", "zhang san", 20, "male");
 		shared_ptr<connection> sp = cp->getConnection();
 		sp->update(sql);
-		/*connection conn;
-		char sql[1024] = { 0 };
-		sprintf_s(sql, "insert into user(name,age,sex) values('%s',%d,'%s')",
-			"zhang san", 20, "male");
-		conn.connect("127.0.0.1", 3306, "root", "211901", "chat");
-		conn.update(sql);*/
 	}
+}
+void test_single(void) {
+	connection conn;
+	conn.connect("127.0.0.1", 3306, "root", "211901", "chat");
+	char sql[1024] = { 0 };
+	sprintf_s(sql, "insert into user(name,age,sex) values('%s',%d,'%s')", "zhang san", 20, "male");
+	conn.connect("127.0.0.1", 3306, "root", "211901", "chat");
+	conn.update(sql);
 }
 int main()
 {
 #if 1
-	int x = 10;
-
-	auto add_x = [x](int a) { x *= 2; return a + x; };  // 复制捕捉x
-
-	cout << add_x(10) << endl; // 输出 30
-
-
-	connection conn;
-	conn.connect("127.0.0.1", 3306, "root", "211901", "chat");
-
-	/*connection conn;
-	char sql[1024] = { 0 };
-	sprintf_s(sql, "insert into user(name,age,sex) values('%s',%d,'%s')","zhang san", 20, "male");
-	conn.connect("127.0.0.1", 3306, "root", "211901", "chat");
-	conn.update(sql);*/
-
 	clock_t begin = clock();
 
-	thread t1(test);
-	thread t2(test);
-	thread t3(test);
-	thread t4(test);
+	thread t1(test_pool);
+	thread t2(test_pool);
+	thread t3(test_pool);
+	thread t4(test_pool);
 
 	t1.join();
 	t2.join();
